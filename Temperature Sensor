@@ -1,0 +1,40 @@
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(7, 6, 5, 4, 3, 2); // Initialize the LCD (RS, E, D4, D5, D6, D7)
+
+const int tempSensorPin = A0; // Potentiometer connected to A0
+const int buzzerPin = 8;      // Buzzer connected to digital pin 8
+
+const float thresholdTemp = 30.0; // Temperature threshold in degrees Celsius
+
+void setup() {
+  lcd.begin(16, 2); // Initialize the LCD
+  lcd.print("Temp: ");
+  pinMode(buzzerPin, OUTPUT);
+}
+
+void loop() {
+  int sensorValue = analogRead(tempSensorPin);
+  
+  // Convert analog value to temperature (assuming 0-1023 range for 0-100°C)
+  float temperature = (sensorValue * 100.0) / 1023.0; // Adjust divisor if necessary
+
+  // Display temperature on LCD
+  lcd.setCursor(6, 0);
+  lcd.print(temperature, 1); // Print with 1 decimal place
+  lcd.print((char)223); // Degree symbol
+  lcd.print("C  ");
+
+  // Check if the temperature exceeds the threshold
+  if (temperature > thresholdTemp) {
+    digitalWrite(buzzerPin, HIGH); // Activate the buzzer
+    lcd.setCursor(0, 1);
+    lcd.print("ALARM: Temp High");
+  } else {
+    digitalWrite(buzzerPin, LOW); // Deactivate the buzzer
+    lcd.setCursor(0, 1);
+    lcd.print("                "); // Clear the alarm message
+  }
+
+  delay(1000); // Wait for 1 second before the next reading
+}
